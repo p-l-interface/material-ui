@@ -62,7 +62,7 @@ const TransitionItem = React.createClass({
     this.setState({
       style: {
         opacity: 1,
-        transform: 'translate3d(0, ' + 0 + 'px, 0)',
+        transform: 'translate3d(0, ' + spacing.desktopKeylineIncrement + 'px, 0)',
       },
     });
 
