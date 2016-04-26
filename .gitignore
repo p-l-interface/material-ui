@@ -10,6 +10,7 @@ icon-builder/jsx
 
 # Exclude IDE project folders
 .idea
+/material-ui.iml
 *.sublime-project
 *.sublime-workspace
 jsconfig.json
