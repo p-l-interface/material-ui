@@ -9,6 +9,7 @@ icon-builder/js
 icon-builder/jsx
 
 # Exclude IDE project folders
+/material-ui.iml
 .idea
 *.sublime-project
 *.sublime-workspace
