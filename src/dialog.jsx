@@ -14,11 +14,16 @@ import deprecated from './utils/deprecatedPropType';
 
 import ReactTransitionGroup from 'react-addons-transition-group';
 
+const bodyPaddingTop = 64;
+const bodyPaddingButtom = 64;
+
 const TransitionItem = React.createClass({
 
   propTypes: {
     children: React.PropTypes.node,
     style: React.PropTypes.object,
+    fullWidth: React.PropTypes.bool,
+    fullHeight: React.PropTypes.bool,
   },
 
   contextTypes: {
@@ -58,13 +63,26 @@ const TransitionItem = React.createClass({
 
   componentWillAppear(callback) {
     const spacing = this.state.muiTheme.rawTheme.spacing;
+    const {fullHeight} = this.props;
 
-    this.setState({
-      style: {
-        opacity: 1,
-        transform: 'translate3d(0, ' + 0 + 'px, 0)',
-      },
-    });
+    if(fullHeight){
+      this.setState({
+        style: {
+          opacity: 1,
+          transform: 'translate3d(0, 0, 0)',
+        },
+      });
+    }else{
+
+      this.setState({
+        style: {
+          opacity: 1,
+          transform: 'translate3d(0, ' + spacing.desktopKeylineIncrement + 'px, 0)',
+        },
+      });
+
+    }
+
 
     setTimeout(callback, 450); // matches transition duration
   },
@@ -123,6 +141,8 @@ const DialogInline = React.createClass({
     titleClassName: React.PropTypes.string,
     titleStyle: React.PropTypes.object,
     width: React.PropTypes.any,
+    fullWidth: React.PropTypes.bool,
+    fullHeight: React.PropTypes.bool,
   },
 
   contextTypes: {
@@ -177,6 +197,9 @@ const DialogInline = React.createClass({
     const rawTheme = muiTheme.rawTheme;
     const spacing = rawTheme.spacing;
     const gutter = spacing.desktopGutter;
+
+
+    debugger;
 
     return {
       root: {
@@ -306,10 +329,10 @@ const DialogInline = React.createClass({
     const actionObjects = this._getActionObjects(actions);
 
     return actionObjects.length > 0 && (
-      <div className={className} style={this.prepareStyles(styles)}>
-        {React.Children.toArray(actionObjects)}
-      </div>
-    );
+        <div className={className} style={this.prepareStyles(styles)}>
+          {React.Children.toArray(actionObjects)}
+        </div>
+      );
   },
 
   _positionDialog() {
@@ -321,6 +344,7 @@ const DialogInline = React.createClass({
       open,
       repositionOnUpdate,
       title,
+      fullHeight,
     } = this.props;
 
     if (!open) {
@@ -338,7 +362,7 @@ const DialogInline = React.createClass({
     dialogContent.style.height = '';
 
     const dialogWindowHeight = dialogWindow.offsetHeight;
-    let paddingTop = ((clientHeight - dialogWindowHeight) / 2) - 64;
+    let paddingTop = ((clientHeight - dialogWindowHeight) / 2) - bodyPaddingTop;
     if (paddingTop < minPaddingTop) paddingTop = minPaddingTop;
 
     //Vertically center the dialog window, but make sure it doesn't
@@ -351,12 +375,35 @@ const DialogInline = React.createClass({
     if (autoDetectWindowHeight || autoScrollBodyContent) {
       const styles = this.getStyles();
       styles.body = this.mergeStyles(styles.body, bodyStyle);
-      let maxDialogContentHeight = clientHeight - 2 * (styles.body.padding + 64);
+
+      console.log('styles.body.padding:' + styles.body.padding);
+
+
+      console.log('clientHeight:' + clientHeight);
+
+      let maxDialogContentHeight;
+
+      if(fullHeight){
+        maxDialogContentHeight = clientHeight - 2 * (styles.body.padding);
+      }else{
+        maxDialogContentHeight = clientHeight - 2 * (styles.body.padding + bodyPaddingTop);
+      }
+
+      console.log('maxDialogContentHeight:' + maxDialogContentHeight);
+
 
       if (title) maxDialogContentHeight -= dialogContent.previousSibling.offsetHeight;
 
+
+      console.log('dialogContent.previousSibling.offsetHeight:' + dialogContent.previousSibling.offsetHeight);
+
       const hasActions = this._getActionObjects(actions).length > 0;
+
       if (hasActions) maxDialogContentHeight -= dialogContent.nextSibling.offsetHeight;
+
+      console.log('dialogContent.nextSibling.offsetHeight:' + dialogContent.nextSibling.offsetHeight);
+
+      console.log('dialogContent.style.maxHeight:' + maxDialogContentHeight + 'px');
 
       dialogContent.style.maxHeight = maxDialogContentHeight + 'px';
     }
@@ -407,12 +454,21 @@ const DialogInline = React.createClass({
       titleStyle,
       title,
       style,
+      fullWidth,
+      fullHeight,
     } = this.props;
 
     const styles = this.getStyles();
 
     styles.root = this.mergeStyles(styles.root, style);
     styles.content = this.mergeStyles(styles.content, contentStyle);
+
+    if(fullWidth){
+      styles.content = this.mergeStyles(styles.content, {
+        width: '100%',
+        maxWidth: 'none',
+      });
+    }
     styles.body = this.mergeStyles(styles.body, bodyStyle);
     styles.actionsContainer = this.mergeStyles(styles.actionsContainer, actionsContainerStyle);
     styles.overlay = this.mergeStyles(styles.overlay, overlayStyle);
@@ -421,8 +477,8 @@ const DialogInline = React.createClass({
     const actionsContainer = this._getActionsContainer(actions, styles.actionsContainer, actionsContainerClassName);
 
     const titleElement = typeof title === 'string'
-        ? <h3 className={titleClassName} style={this.prepareStyles(styles.title)}>{title}</h3>
-        : title;
+      ? <h3 className={titleClassName} style={this.prepareStyles(styles.title)}>{title}</h3>
+      : title;
 
     return (
       <div className={className} style={this.prepareStyles(styles.root)}>
@@ -432,25 +488,27 @@ const DialogInline = React.createClass({
           transitionEnter={true} transitionEnterTimeout={450}
         >
           {open &&
-            <TransitionItem
-              className={contentClassName}
-              style={styles.content}
+          <TransitionItem
+            className={contentClassName}
+            style={styles.content}
+            fullWidth={fullWidth}
+            fullHeight={fullHeight}
+          >
+            <Paper
+              style={styles.paper}
+              zDepth={4}
             >
-              <Paper
-                style={styles.paper}
-                zDepth={4}
+              {titleElement}
+              <div
+                ref="dialogContent"
+                className={bodyClassName}
+                style={this.prepareStyles(styles.body)}
               >
-                {titleElement}
-                <div
-                  ref="dialogContent"
-                  className={bodyClassName}
-                  style={this.prepareStyles(styles.body)}
-                >
-                  {children}
-                </div>
-                {actionsContainer}
-              </Paper>
-            </TransitionItem>
+                {children}
+              </div>
+              {actionsContainer}
+            </Paper>
+          </TransitionItem>
           }
         </ReactTransitionGroup>
         <Overlay
@@ -589,6 +647,15 @@ const Dialog = React.createClass({
      */
     width: deprecated(React.PropTypes.any,
       'Use the contentStyle.'),
+
+    /**
+     * full width `Dialog`.
+     */
+    fullWidth: React.PropTypes.bool,
+    /**
+     * full height `Dialog`.
+     */
+    fullHeight: React.PropTypes.bool,
   },
 
   getDefaultProps() {
@@ -597,6 +664,8 @@ const Dialog = React.createClass({
       autoScrollBodyContent: false,
       modal: false,
       repositionOnUpdate: true,
+      fullWidth: false,
+      fullHeight: false,
     };
   },
 
