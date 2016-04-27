@@ -196,8 +196,6 @@ const DialogInline = React.createClass({
     const spacing = rawTheme.spacing;
     const gutter = spacing.desktopGutter;
 
-    
-
     return {
       root: {
         position: 'fixed',
@@ -352,7 +350,15 @@ const DialogInline = React.createClass({
     const container = ReactDOM.findDOMNode(this);
     const dialogWindow = ReactDOM.findDOMNode(this.refs.dialogWindow);
     const dialogContent = ReactDOM.findDOMNode(this.refs.dialogContent);
-    const minPaddingTop = 16;
+
+    let minPaddingTop = 0;
+    if(fullHeight){
+       minPaddingTop = 0;
+    }else{
+       minPaddingTop = 16;
+    }
+
+
 
     //Reset the height in case the window was resized.
     dialogWindow.style.height = '';
@@ -460,7 +466,8 @@ const DialogInline = React.createClass({
     styles.root = this.mergeStyles(styles.root, style);
     styles.content = this.mergeStyles(styles.content, contentStyle);
 
-    if(fullWidth){
+    if(fullWidth || fullHeight){
+      // important!! if fullHeight is true, fullWidth is true
       styles.content = this.mergeStyles(styles.content, {
         width: '100%',
         maxWidth: 'none',
@@ -654,6 +661,7 @@ const Dialog = React.createClass({
      */
     fullHeight: React.PropTypes.bool,
   },
+
 
   getDefaultProps() {
     return {
