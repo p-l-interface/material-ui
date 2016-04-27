@@ -141,8 +141,6 @@ const DialogInline = React.createClass({
     titleClassName: React.PropTypes.string,
     titleStyle: React.PropTypes.object,
     width: React.PropTypes.any,
-    fullWidth: React.PropTypes.bool,
-    fullHeight: React.PropTypes.bool,
   },
 
   contextTypes: {
@@ -198,8 +196,7 @@ const DialogInline = React.createClass({
     const spacing = rawTheme.spacing;
     const gutter = spacing.desktopGutter;
 
-
-    debugger;
+    
 
     return {
       root: {
