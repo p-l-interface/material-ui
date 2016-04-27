@@ -379,11 +379,6 @@ const DialogInline = React.createClass({
       const styles = this.getStyles();
       styles.body = this.mergeStyles(styles.body, bodyStyle);
 
-      console.log('styles.body.padding:' + styles.body.padding);
-
-
-      console.log('clientHeight:' + clientHeight);
-
       let maxDialogContentHeight;
 
       if(fullHeight){
@@ -392,22 +387,14 @@ const DialogInline = React.createClass({
         maxDialogContentHeight = clientHeight - 2 * (styles.body.padding + bodyPaddingTop);
       }
 
-      console.log('maxDialogContentHeight:' + maxDialogContentHeight);
-
 
       if (title) maxDialogContentHeight -= dialogContent.previousSibling.offsetHeight;
 
 
-      console.log('dialogContent.previousSibling.offsetHeight:' + dialogContent.previousSibling.offsetHeight);
-
       const hasActions = this._getActionObjects(actions).length > 0;
 
       if (hasActions) maxDialogContentHeight -= dialogContent.nextSibling.offsetHeight;
-
-      console.log('dialogContent.nextSibling.offsetHeight:' + dialogContent.nextSibling.offsetHeight);
-
-      console.log('dialogContent.style.maxHeight:' + maxDialogContentHeight + 'px');
-
+      
       dialogContent.style.maxHeight = maxDialogContentHeight + 'px';
     }
   },
