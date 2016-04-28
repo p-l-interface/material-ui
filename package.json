@@ -23,7 +23,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/callemall/material-ui.git"
+    "url": "git+https://p-l-interface@github.com/p-l-interface/material-ui.git#custom-v0.14.4-release"
   },
   "license": "MIT",
   "bugs": {
